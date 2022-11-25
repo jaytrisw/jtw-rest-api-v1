@@ -39,17 +39,17 @@ function register_taxonomy_route()
 	);
 }
 
-// function register_taxonomies_route()
-// {
-// 	register_rest_route(
-// 		'main/v1',
-// 		'taxonomies/(?P<slug>[a-zA-Z-]+)',
-// 		array(
-// 			'methods' => WP_REST_SERVER::READABLE,
-// 			'callback' => 'get_main_taxonomies'
-// 		)
-// 	);
-// }
+function register_taxonomies_route()
+{
+	register_rest_route(
+		'main/v1',
+		'taxonomies/(?P<slug>[a-zA-Z-]+)',
+		array(
+			'methods' => WP_REST_SERVER::READABLE,
+			'callback' => 'get_main_taxonomies'
+		)
+	);
+}
 
 function register_post_route()
 {
@@ -102,29 +102,29 @@ function get_main_taxonomy(WP_REST_Request $request)
 	return error('Please include a query for `term`');
 }
 
-// function get_main_taxonomies(WP_REST_Request $request)
-// {
-// 	$terms = get_terms($request['slug']);
-// 	$terms_data = array();
-// 	$i = 0;
-// 	// Maybe revert this?
-// 	// 'identifier' => $term->term_id,
-// 	// 'term_taxonomy_identifier' => $term->term_taxonomy_id,
-// 	foreach ($terms as $term) {
-// 		$terms_data[$i] = array(
-// 			'identifier' => $term->term_taxonomy_id,
-// 			'name' => $term->name,
-// 			'slug' => $term->slug,
-// 			'type' => $term->taxonomy,
-// 			'description' => wp_strip_all_tags($term->description) ?: null,
-// 			'parent' => $term->parent,
-// 			'count' => $term->count,
-// 		);
-// 		$i++;
-// 	}
+function get_main_taxonomies(WP_REST_Request $request)
+{
+	$terms = get_terms($request['slug']);
+	$terms_data = array();
+	$i = 0;
+	// Maybe revert this?
+	// 'identifier' => $term->term_id,
+	// 'term_taxonomy_identifier' => $term->term_taxonomy_id,
+	foreach ($terms as $term) {
+		$terms_data[$i] = array(
+			'identifier' => $term->term_taxonomy_id,
+			'name' => $term->name,
+			'slug' => $term->slug,
+			'type' => $term->taxonomy,
+			'description' => wp_strip_all_tags($term->description) ?: null,
+			'parent' => $term->parent,
+			'count' => $term->count,
+		);
+		$i++;
+	}
 
-// 	return $terms_data;
-// }
+	return $terms_data;
+}
 
 function generate_query(
 	string $posts_per_page,
