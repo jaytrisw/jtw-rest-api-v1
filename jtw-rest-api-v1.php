@@ -122,13 +122,8 @@ function get_main_taxonomies(WP_REST_Request $request)
 		);
 		$i++;
 	}
-
-	$response = array(
-		'status' => 200,
-		'data' => $terms_data
-	);
-
-	return WP_REST_Response($response);
+	
+	return $terms_data;
 }
 
 function generate_query(
