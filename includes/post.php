@@ -1,6 +1,6 @@
 <?php
 
-require('includes/template.php');
+require('template.php');
 
 function get_main_posts($query_string)
 {
