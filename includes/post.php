@@ -1,5 +1,7 @@
 <?php
 
+require('includes/template.php');
+
 function get_main_posts($query_string)
 {
 	$arguments = array(
@@ -135,9 +137,6 @@ function generate_taxonomies_for(WP_Post $post) {
 
     $terms_data = array();
 	$i = 0;
-    // Maybe revert this?
-    // 'identifier' => $term->term_id,
-    // 'term_taxonomy_identifier' => $term->term_taxonomy_id,
 	foreach ($taxonomies as $taxonomy) {
 		$terms_data[$i] = generate_term_for($post, $taxonomy);
 		$i++;
@@ -150,19 +149,9 @@ function generate_term_for(WP_Post $post, string $term_name): array
 	$terms = wp_get_post_terms($post->ID, $term_name);
 	$terms_data = array();
 	$i = 0;
-    // Maybe revert this?
-    // 'identifier' => $term->term_id,
-    // 'term_taxonomy_identifier' => $term->term_taxonomy_id,
+
 	foreach ($terms as $term) {
-		$terms_data[$i] = array(
-			'identifier' => $term->term_taxonomy_id,
-			'name' => $term->name,
-			'slug' => $term->slug,
-			'type' => $term->taxonomy,
-			'description' => wp_strip_all_tags($term->description) ?: null,
-			'parent' => $term->parent,
-			'count' => $term->count,
-		);
+		$terms_data[$i] = generate_element_for($term)
 		$i++;
 	}
 	return $terms_data;
