@@ -122,14 +122,7 @@ function get_main_taxonomies(WP_REST_Request $request)
 		);
 		$i++;
 	}
-	return $terms_data;
-
-	$arguments = array(
-		'taxonomy' => $request['slug'],
-		'number' => 9999,
-		'hierarchical' => true
-	);
-	return new WP_Term_Query($arguments);
+	return WP_REST_Response($terms_data);
 }
 
 function generate_query(
