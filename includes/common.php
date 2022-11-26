@@ -5,6 +5,7 @@ class Common
 
     static function generate_query(
         string $id = '',
+        string $slug = '',
         string $posts_per_page = '',
         string $post_type = '',
         string $page = '',
@@ -14,6 +15,7 @@ class Common
     {
         $arguments = array(
             'p' => $id,
+            'name' => slug,
             'posts_per_page' => $posts_per_page,
             'post_type' => $post_type,
             'paged' => $page,
