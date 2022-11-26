@@ -20,4 +20,12 @@ class Common {
         return new WP_Query($arguments);
     }
 
+    static function generate_date_for(string $local, string $gmt): array
+{
+	return array(
+		'local' => $local,
+		'gmt' => $gmt
+	);
+}
+
 }
