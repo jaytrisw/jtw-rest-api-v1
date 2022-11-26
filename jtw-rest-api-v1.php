@@ -71,4 +71,13 @@ function register_post_route()
 			'callback' => 'get_main_discussion_for_post_with_id'
 		)
 	);
+	
+	register_rest_route(
+		'main/v1',
+		'post/(?P<id>[\d]+)/discussion',
+		array(
+			'methods' => WP_REST_SERVER::CREATABLE,
+			'callback' => 'post_main_discussion_for_post_with_id'
+		)
+	);
 }
