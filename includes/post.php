@@ -7,6 +7,8 @@ function get_main_posts(WP_REST_Request $request): WP_REST_Response
 		request: $request,
 		parameter: 'count',
 	default
+
+
 			: '10'
 		),
 	post_type: Post::POST_TYPE,
@@ -37,20 +39,6 @@ function get_main_post_with_id(WP_REST_Request $request): WP_REST_Response
 	return Response::success(current(Post::generate_elements_for($query->posts)));
 }
 
-function get_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST_Response
-{
-
-	$query = Common::generate_query(
-	id: Common::get_param(
-		request: $request,
-		parameter: 'id'
-		),
-	post_type: Post::POST_TYPE
-	);
-
-	return Response::success(current(Post::generate_elements_for($query->posts))->discussion);
-}
-
 function get_main_post_with_slug(WP_REST_Request $request): WP_REST_Response
 {
 	$query = Common::generate_query(
@@ -62,6 +50,21 @@ function get_main_post_with_slug(WP_REST_Request $request): WP_REST_Response
 	);
 
 	return Response::success(current(Post::generate_elements_for($query->posts)));
+}
+
+function get_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST_Response
+{
+	$query = Common::generate_query(
+	id: Common::get_param(
+		request: $request,
+		parameter: 'id'
+		),
+	post_type: Post::POST_TYPE
+	);
+
+	return Response::success(
+		current(Post::generate_elements_for($query->posts))['discussion']
+	);
 }
 
 class Post
@@ -133,7 +136,7 @@ class Post
 	private static function generate_taxonomies_for(WP_Post $post)
 	{
 		$taxonomies = get_post_taxonomies($post);
-	
+
 		$terms_data = array();
 		$i = 0;
 		foreach ($taxonomies as $taxonomy) {

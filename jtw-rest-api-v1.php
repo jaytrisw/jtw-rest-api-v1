@@ -65,7 +65,7 @@ function register_post_route()
 
 	register_rest_route(
 		'main/v1',
-		'post/(?P<id>[0-9-]+)/discussion',
+		'post/(?P<id>[\d]+)/discussion',
 		array(
 			'methods' => WP_REST_SERVER::READABLE,
 			'callback' => 'get_main_discussion_for_post_with_id'
