@@ -76,17 +76,17 @@ function register_post_route()
 
 function get_main_taxonomy(WP_REST_Request $request)
 {
-	if ($request['term']) {
+	if (sanitize_text_field($request->get_param('term'))) {
 		$query = generate_query(
-			$request['count'] ?: '10',
+			sanitize_text_field($request->get_param('count')) ?: '10',
 			'post',
-			$request['page'] ?: '0',
-			$request['search'] ?: '',
+			sanitize_text_field($request->get_param('page')) ?: '0',
+			sanitize_text_field($request->get_param('search')) ?: '',
 			array(
 				array(
-					'taxonomy' => $request['slug'],
+					'taxonomy' => sanitize_text_field($request->get_param('slug')),
 					'field' => 'slug',
-					'terms' => $request['term']
+					'terms' => sanitize_text_field($request->get_param('term'))
 				)
 			)
 		);
@@ -106,8 +106,10 @@ function get_main_taxonomy(WP_REST_Request $request)
 
 function get_main_taxonomies(WP_REST_Request $request)
 {
-	$terms = get_terms($request['slug']);
-	return Taxonomy::generate_taxonomy_elements_for($terms)
+	$terms = get_terms(
+		sanitize_text_field($request->get_param('slug'))
+	);
+	return Taxonomy::generate_elements_for($terms);
 }
 
 function generate_query(

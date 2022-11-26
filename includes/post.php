@@ -1,31 +1,31 @@
 <?php
 
-function get_main_posts($query_string)
+function get_main_posts(WP_REST_Request $request)
 {
 	$arguments = array(
-		'posts_per_page' => $query_string['count'] ?: '10',
+		'posts_per_page' => sanitize_text_field($request->get_param('count')) ?: '10',
 		'post_type' => 'post',
-		'paged' => $query_string['page'],
-		's' => $query_string['search']
+		'paged' => sanitize_text_field($request->get_param('page')),
+		's' => sanitize_text_field($request->get_param('search'))
 	);
 
 	return generate_json($arguments);
 }
 
-function get_main_post_with_id($id)
+function get_main_post_with_id(WP_REST_Request $request)
 {
 	$arguments = array(
-		'p' => $id['id'],
+		'p' => sanitize_text_field($request->get_param('id')),
 		'post_type' => 'post'
 	);
 
 	return current(generate_json($arguments));
 }
 
-function get_main_post_with_slug($slug)
+function get_main_post_with_slug(WP_REST_Request $request)
 {
 	$arguments = array(
-		'p' => $slug['slug'],
+		'p' => sanitize_text_field($request->get_param('slug')),
 		'post_type' => 'post'
 	);
 
@@ -145,11 +145,5 @@ function generate_taxonomies_for(WP_Post $post) {
 function generate_term_for(WP_Post $post, string $term_name): array
 {
 	$terms = wp_get_post_terms($post->ID, $term_name);
-	return Taxonomy::generate_taxonomy_elements_for($terms)
-}
-
-function flatten(array $array) {
-    $return = array();
-    array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
-    return $return;
+	return Taxonomy::generate_elements_for($terms);
 }

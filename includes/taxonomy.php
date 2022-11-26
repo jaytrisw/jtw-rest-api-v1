@@ -2,7 +2,20 @@
 
 class Taxonomy
 {
-	private static function generate_taxonomy_element_for($term): array
+
+	public static function generate_elements_for(array $terms): array
+	{
+		$terms_data = array();
+		$i = 0;
+		foreach ($terms as $term) {
+			$terms_data[$i] = Taxonomy::generate_element_for($term);
+			$i++;
+		}
+
+		return $terms_data;
+	}
+
+	private static function generate_element_for(WP_Term $term): array
 	{
 		// Maybe revert this?
 		// 'identifier' => $term->term_id,
@@ -16,17 +29,5 @@ class Taxonomy
 			'parent' => $term->parent,
 			'count' => $term->count
 		);
-	}
-
-	static function generate_taxonomy_elements_for(array $terms): array
-	{
-		$terms_data = array();
-		$i = 0;
-		foreach ($terms as $term) {
-			$terms_data[$i] = generate_taxonomy_element_for($term);
-			$i++;
-		}
-
-		return $terms_data;
 	}
 }
