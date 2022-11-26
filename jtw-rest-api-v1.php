@@ -1,12 +1,12 @@
 <?php
 
-/*
-Plugin Name: Joshua T. Wood, Photography API, Version 1
-Plugin URI: https://www.joshuatwood.com
-Description: Custom REST API for Joshua T. Wood, Photography
-Author: Joshua T. Wood
-Author URI: https://www.joshuatwood.com
-Version: 1.0.0
+/**
+ * Plugin Name: Joshua T. Wood, Photography API, Version 1
+ * Description: Custom REST API for Joshua T. Wood, Photography
+ * Author: Joshua T. Wood
+ * Author URI: https://www.joshuatwood.com
+ * Version: 1.0.0
+ * Plugin URI: https://www.joshuatwood.com
 */
 
 require('includes/post.php');
@@ -80,7 +80,7 @@ function get_main_taxonomy(WP_REST_Request $request): array
 {
 	if (sanitize_text_field($request->get_param('term'))) {
 		$query = Common::generate_query(
-			null,
+			'',
 			sanitize_text_field($request->get_param('count')) ?: '10',
 			'post',
 			sanitize_text_field($request->get_param('page')) ?: '0',

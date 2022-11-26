@@ -54,11 +54,11 @@ function get_main_post_with_id(WP_REST_Request $request)
 
 	$query = Common::generate_query(
 		sanitize_text_field($request->get_param('id')),
-		null,
+		'',
 		POST_TYPE,
-		null,
-		null,
-		null
+		'',
+		'',
+		[]
 	);
 
 	return Post::generate_elements_for($query->posts);
@@ -78,11 +78,11 @@ function get_main_post_with_slug(WP_REST_Request $request)
 	// );
 	$query = Common::generate_query(
 		sanitize_text_field($request->get_param('slug')),
-		null,
+		'',
 		POST_TYPE,
-		null,
-		null,
-		null
+		'',
+		'',
+		[]
 	);
 
 	return current(Post::generate_elements_for($query->posts));
