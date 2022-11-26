@@ -53,7 +53,8 @@ function get_main_post_with_id(WP_REST_Request $request)
 {
 
 	$query = Common::generate_query(
-		id: Common::get_param(request: $request, parameter: 'id'), // sanitize_text_field($request->get_param('id')),
+		id: Common::get_param(request: $request, parameter: 'id'), // sanitize_text_field($request->get_param('id')),,
+		post_type: POST_TYPE
 	);
 
 	return Post::generate_elements_for($query->posts);
@@ -72,7 +73,8 @@ function get_main_post_with_slug(WP_REST_Request $request)
 	// 	'post_type' => POST_TYPE
 	// );
 	$query = Common::generate_query(
-		slug: Common::get_param(request: $request, parameter: 'slug')
+		slug: Common::get_param(request: $request, parameter: 'slug'),
+		post_type: POST_TYPE
 	);
 
 	return current(Post::generate_elements_for($query->posts));

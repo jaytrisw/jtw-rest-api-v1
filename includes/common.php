@@ -15,7 +15,7 @@ class Common
     {
         $arguments = array(
             'p' => $id,
-            'name' => slug,
+            'name' => $slug,
             'posts_per_page' => $posts_per_page,
             'post_type' => $post_type,
             'paged' => $page,
