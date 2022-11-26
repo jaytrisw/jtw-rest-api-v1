@@ -1,9 +1,42 @@
 <?php
 
-define('POST_TYPE', 'post');
+function get_main_posts(WP_REST_Request $request)
+{
+	$query = Common::generate_query(
+		posts_per_page: Common::get_param(request: $request, parameter: 'count', default: '10'),
+		post_type: Post::POST_TYPE,
+		page: Common::get_param(request: $request, parameter: 'page'),
+		search: Common::get_param(request: $request, parameter: 'search')
+	);
+
+	return Post::generate_elements_for($query->posts);
+}
+
+function get_main_post_with_id(WP_REST_Request $request)
+{
+
+	$query = Common::generate_query(
+		id: Common::get_param(request: $request, parameter: 'id'),
+		post_type: Post::POST_TYPE
+	);
+
+	return current(Post::generate_elements_for($query->posts));
+}
+
+function get_main_post_with_slug(WP_REST_Request $request)
+{
+	$query = Common::generate_query(
+		slug: Common::get_param(request: $request, parameter: 'slug'),
+		post_type: Post::POST_TYPE
+	);
+
+	return current(Post::generate_elements_for($query->posts));
+}
 
 class Post
 {
+
+	const POST_TYPE = 'post';
 
 	public static function generate_elements_for(array $posts): array
 	{
@@ -35,39 +68,6 @@ class Post
 		);
 	}
 
-}
-
-function get_main_posts(WP_REST_Request $request)
-{
-	$arguments = array(
-		'posts_per_page' => Common::get_param(request: $request, parameter: 'count', default: '10'),
-		'post_type' => POST_TYPE,
-		'paged' => Common::get_param(request: $request, parameter: 'page'),
-		's' => Common::get_param(request: $request, parameter: 'search')
-	);
-
-	return generate_json($arguments);
-}
-
-function get_main_post_with_id(WP_REST_Request $request)
-{
-
-	$query = Common::generate_query(
-		id: Common::get_param(request: $request, parameter: 'id'),
-		post_type: POST_TYPE
-	);
-
-	return current(Post::generate_elements_for($query->posts));
-}
-
-function get_main_post_with_slug(WP_REST_Request $request)
-{
-	$query = Common::generate_query(
-		slug: Common::get_param(request: $request, parameter: 'slug'),
-		post_type: POST_TYPE
-	);
-
-	return current(Post::generate_elements_for($query->posts));
 }
 
 function generate_json(array $arguments)

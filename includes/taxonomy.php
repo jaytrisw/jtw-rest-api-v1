@@ -10,7 +10,7 @@ function get_main_taxonomy(WP_REST_Request $request): WP_REST_Response
 	if ($term) {
 		$query = Common::generate_query(
 			posts_per_page: $count,
-			post_type: POST_TYPE,
+			post_type: Post::POST_TYPE,
 			page: $page,
 			search: $search,
 			tax_query: array(

@@ -10,7 +10,7 @@ class Common
         string $post_type = '',
         string $page = '',
         string $search = '',
-        array $tax_query = []
+        array $tax_query = array()
     ): WP_Query
     {
         $arguments = array(
