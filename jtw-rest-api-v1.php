@@ -10,7 +10,7 @@ Version: 1.0.0
 */
 
 require('includes/post.php');
-require('includes/template.php');
+require('includes/taxonomy.php');
 add_action('rest_api_init', 'register_posts_route');
 add_action('rest_api_init', 'register_post_route');
 add_action('rest_api_init', 'register_taxonomy_route');
@@ -109,7 +109,7 @@ function get_main_taxonomies(WP_REST_Request $request)
 	$terms_data = array();
 	$i = 0;
 	foreach ($terms as $term) {
-		$terms_data[$i] = generate_element_for($term)
+		$terms_data[$i] = generate_element_for($term);
 		$i++;
 	}
 

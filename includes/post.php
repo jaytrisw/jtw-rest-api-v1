@@ -1,6 +1,6 @@
 <?php
 
-require('template.php');
+require('taxonomy.php');
 
 function get_main_posts($query_string)
 {
