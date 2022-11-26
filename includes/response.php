@@ -8,12 +8,12 @@ class Response
         return new WP_REST_Response($data);
     }
 
-    static function failure(string $message): WP_REST_Response
+    static function failure(mixed $message): WP_REST_Response
     {
         return new WP_REST_Response(Response::error($message));
     }
 
-    private static function error(string $message): array
+    private static function error(mixed $message): array
     {
         return array(
             'title' => 'Error',
