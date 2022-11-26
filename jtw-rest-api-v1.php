@@ -91,7 +91,7 @@ function register_post_route()
 	);
 }
 
-function autenticate_post_callback(WP_REST_Request $request)
+function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
 {
 	$encoded_username = Common::get_param($request, 'username');
 	$encoded_password = Common::get_param($request, 'password');
@@ -105,11 +105,9 @@ function autenticate_post_callback(WP_REST_Request $request)
 	);
 	$make_call = callAPI('POST', 'https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/', json_encode($data_array));
 	$response = json_decode($make_call, true);
-	$errors = $response['response']['errors'];
-	$data = $response['response']['data'][0];
 
 	if ($response['token']) {
-		Response::success(array('token' => $response['token']));
+		return Response::success(array('token' => $response['token']));
 	}
 
 	return Response::failure('Authentication failed.');
@@ -135,16 +133,13 @@ function callAPI(string $method, string $url, string $data): string
 	}
 	// OPTIONS:
 	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-		'Content-Type: application/json'
-	)
-	);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 	// EXECUTE:
 	$result = curl_exec($curl);
 	if (!$result) {
-		die("Connection Failure");
+		return 'Call failed';
 	}
 	curl_close($curl);
 	return $result;
