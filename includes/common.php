@@ -1,6 +1,7 @@
 <?php
 
-class Common {
+class Common
+{
 
     static function generate_query(
         string $id = '',
@@ -8,7 +9,8 @@ class Common {
         string $post_type = '',
         string $page = '',
         string $search = '',
-        array $tax_query = []): WP_Query
+        array $tax_query = []
+    ): WP_Query
     {
         $arguments = array(
             'p' => $id,
@@ -23,11 +25,15 @@ class Common {
     }
 
     static function generate_date_for(string $local, string $gmt): array
-{
-	return array(
-		'local' => $local,
-		'gmt' => $gmt
-	);
-}
+    {
+        return array(
+            'local' => $local,
+            'gmt' => $gmt
+        );
+    }
+
+    static function get_param(WP_REST_Request $request, string $parameter, string $default = ''): string {
+        return sanitize_text_field($request->get_param($parameter)) ?: $default;
+    }
 
 }
