@@ -1,5 +1,38 @@
 <?php
 
+function get_main_taxonomy(WP_REST_Request $request): WP_REST_Response
+{
+	$count = Common::get_param(request: $request, parameter: 'count', default: '10');
+	$page = Common::get_param(request: $request, parameter: 'page');
+	$search = Common::get_param(request: $request, parameter: 'search');
+	$term =  Common::get_param(request: $request, parameter: 'term');
+	$slug = Common::get_param(request: $request, parameter: 'slug');
+	if ($term) {
+		$query = Common::generate_query(
+			posts_per_page: $count,
+			post_type: POST_TYPE,
+			page: $page,
+			search: $search,
+			tax_query: array(
+				array(
+					'taxonomy' => $slug,
+					'field' => Constants::slug,
+					'terms' => $term
+				)
+			)
+		);
+		return Response::success(Post::generate_elements_for($query->posts));
+	}
+	if ($slug) {
+		$terms = get_terms($slug);
+		if (taxonomy_exists($slug)) {
+			return Response::success(Taxonomy::generate_elements_for($terms));
+		}
+		return Response::failure('Taxonomy \'' . $slug . '\' does not exist');
+	}
+	return Response::failure('Unknown error occured');
+}
+
 class Taxonomy
 {
 

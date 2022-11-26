@@ -34,7 +34,8 @@ class Common
         );
     }
 
-    static function get_param(WP_REST_Request $request, string $parameter, string $default = ''): string {
+    static function get_param(WP_REST_Request $request, string $parameter, string $default = ''): string
+    {
         return sanitize_text_field($request->get_param($parameter)) ?: $default;
     }
 
