@@ -51,22 +51,42 @@ function get_main_posts(WP_REST_Request $request)
 
 function get_main_post_with_id(WP_REST_Request $request)
 {
-	$arguments = array(
-		'p' => sanitize_text_field($request->get_param('id')),
-		'post_type' => POST_TYPE
+
+	$query = Common::generate_query(
+		sanitize_text_field($request->get_param('id')),
+		null,
+		POST_TYPE,
+		null,
+		null,
+		null
 	);
 
-	return current(generate_json($arguments));
+	return Post::generate_elements_for($query->posts);
+	// $arguments = array(
+	// 	'p' => sanitize_text_field($request->get_param('id')),
+	// 	'post_type' => POST_TYPE
+	// );
+
+	// return current(generate_json($arguments));
 }
 
 function get_main_post_with_slug(WP_REST_Request $request)
 {
-	$arguments = array(
-		'p' => sanitize_text_field($request->get_param('slug')),
-		'post_type' => POST_TYPE
+	// $arguments = array(
+	// 	'p' => sanitize_text_field($request->get_param('slug')),
+	// 	'post_type' => POST_TYPE
+	// );
+	$query = Common::generate_query(
+		sanitize_text_field($request->get_param('slug')),
+		null,
+		POST_TYPE,
+		null,
+		null,
+		null
 	);
 
-	return current(generate_json($arguments));
+	return current(Post::generate_elements_for($query->posts));
+	// return current(generate_json($arguments));
 }
 
 function generate_json(array $arguments)
