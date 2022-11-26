@@ -7,7 +7,7 @@
  * Author URI: https://www.joshuatwood.com
  * Version: 1.0.0
  * Plugin URI: https://www.joshuatwood.com
-*/
+ */
 
 require('includes/post.php');
 require('includes/taxonomy.php');
@@ -71,7 +71,7 @@ function register_post_route()
 			'callback' => 'get_main_discussion_for_post_with_id'
 		)
 	);
-	
+
 	register_rest_route(
 		'main/v1',
 		'post/(?P<id>[\d]+)/discussion',
@@ -80,4 +80,72 @@ function register_post_route()
 			'callback' => 'post_main_discussion_for_post_with_id'
 		)
 	);
+
+	register_rest_route(
+		'main/v1',
+		'authenticate',
+		array(
+			'methods' => WP_REST_SERVER::CREATABLE,
+			'callback' => 'autenticate_post_callback'
+		)
+	);
+}
+
+function autenticate_post_callback(WP_REST_Request $request)
+{
+	$encoded_username = Common::get_param($request, 'username');
+	$encoded_password = Common::get_param($request, 'password');
+
+	$username = base64_decode($encoded_username);
+	$password = base64_decode($encoded_password);
+
+	$data_array = array(
+		'username' => $username,
+		'password' => $password
+	);
+	$make_call = callAPI('POST', 'https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/', json_encode($data_array));
+	$response = json_decode($make_call, true);
+	$errors = $response['response']['errors'];
+	$data = $response['response']['data'][0];
+
+	if ($response['token']) {
+		Response::success(array('token' => $response['token']));
+	}
+
+	return Response::failure('Authentication failed.');
+}
+
+function callAPI(string $method, string $url, string $data): string
+{
+	$curl = curl_init();
+	switch ($method) {
+		case 'POST':
+			curl_setopt($curl, CURLOPT_POST, 1);
+			if ($data)
+				curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+			break;
+		case 'PUT':
+			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+			if ($data)
+				curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+			break;
+		default:
+			if ($data)
+				$url = sprintf("%s?%s", $url, http_build_query($data));
+	}
+	// OPTIONS:
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+		'Content-Type: application/json'
+	)
+	);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+	// EXECUTE:
+	$result = curl_exec($curl);
+	if (!$result) {
+		die("Connection Failure");
+	}
+	curl_close($curl);
+	return $result;
 }
