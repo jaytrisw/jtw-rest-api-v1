@@ -80,6 +80,7 @@ function get_main_taxonomy(WP_REST_Request $request): array
 {
 	if (sanitize_text_field($request->get_param('term'))) {
 		$query = Common::generate_query(
+			null,
 			sanitize_text_field($request->get_param('count')) ?: '10',
 			'post',
 			sanitize_text_field($request->get_param('page')) ?: '0',

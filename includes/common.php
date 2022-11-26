@@ -3,7 +3,7 @@
 class Common {
 
     static function generate_query(
-        string $id = null,
+        string $id,
         string $posts_per_page,
         string $post_type,
         string $page,
