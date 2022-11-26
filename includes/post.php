@@ -1,6 +1,6 @@
 <?php
 
-function get_main_posts(WP_REST_Request $request)
+function get_main_posts(WP_REST_Request $request): WP_REST_Response
 {
 	$query = Common::generate_query(
 	posts_per_page: Common::get_param(
@@ -20,10 +20,10 @@ function get_main_posts(WP_REST_Request $request)
 		)
 	);
 
-	return Post::generate_elements_for($query->posts);
+	return Response::success(Post::generate_elements_for($query->posts));
 }
 
-function get_main_post_with_id(WP_REST_Request $request)
+function get_main_post_with_id(WP_REST_Request $request): WP_REST_Response
 {
 
 	$query = Common::generate_query(
@@ -34,10 +34,10 @@ function get_main_post_with_id(WP_REST_Request $request)
 	post_type: Post::POST_TYPE
 	);
 
-	return current(Post::generate_elements_for($query->posts));
+	return Response::success(current(Post::generate_elements_for($query->posts)));
 }
 
-function get_main_post_with_slug(WP_REST_Request $request)
+function get_main_post_with_slug(WP_REST_Request $request): WP_REST_Response
 {
 	$query = Common::generate_query(
 	slug: Common::get_param(
@@ -47,7 +47,7 @@ function get_main_post_with_slug(WP_REST_Request $request)
 	post_type: Post::POST_TYPE
 	);
 
-	return current(Post::generate_elements_for($query->posts));
+	return Response::success(current(Post::generate_elements_for($query->posts)));
 }
 
 class Post
@@ -123,7 +123,7 @@ class Post
 		$terms_data = array();
 		$i = 0;
 		foreach ($taxonomies as $taxonomy) {
-			$terms = wp_get_post_terms($post->ID, $term_name);
+			$terms = wp_get_post_terms($post->ID, $taxonomy);
 			$terms_data[$i] = Taxonomy::generate_elements_for($terms);
 			$i++;
 		}
