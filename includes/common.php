@@ -3,6 +3,7 @@
 class Common {
 
     static function generate_query(
+        string $id = null,
         string $posts_per_page,
         string $post_type,
         string $page,
@@ -10,6 +11,7 @@ class Common {
         array $tax_query): WP_Query
     {
         $arguments = array(
+            'p' => $id,
             'posts_per_page' => $posts_per_page,
             'post_type' => $post_type,
             'paged' => $page,

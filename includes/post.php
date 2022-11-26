@@ -11,7 +11,7 @@ class Post
 		$i = 0;
 
 		foreach ($posts as $post) {
-			$data[$i] = generate_element_for($post);
+			$data[$i] = Post::generate_element_for($post);
 			$i++;
 		}
 
