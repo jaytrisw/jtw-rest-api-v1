@@ -78,9 +78,9 @@ function post_main_discussion_for_post_with_id(WP_REST_Request $request): WP_RES
 	$post_id = Common::get_param($request, 'id');
 	$user_id = Common::get_param($request, 'author_id');
 	$comment_parent = Common::get_param($request, 'parent');
-	$require_authentication = Common::get_param($request, 'require_authentication', true);
+	$require_authentication = Common::get_param($request, 'require_authentication', 'true');
 
-	if ($require_authentication) {
+	if ($require_authentication == 'true') {
 		if (!is_user_logged_in()) {
 			return Response::failure('Unauthenticated request.');
 		}
