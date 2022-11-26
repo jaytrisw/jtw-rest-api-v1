@@ -9,6 +9,7 @@ function get_main_posts(WP_REST_Request $request): WP_REST_Response
 	default
 
 
+
 			: '10'
 		),
 	post_type: Post::POST_TYPE,
@@ -67,7 +68,8 @@ function get_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST
 	);
 }
 
-function post_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST_Response {
+function post_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST_Response
+{
 
 	$comment_author = Common::get_param($request, 'author');
 	$comment_author_email = Common::get_param($request, 'author_email');
@@ -76,26 +78,12 @@ function post_main_discussion_for_post_with_id(WP_REST_Request $request): WP_RES
 	$post_id = Common::get_param($request, 'id');
 	$user_id = Common::get_param($request, 'author_id');
 	$comment_parent = Common::get_param($request, 'parent');
-	
-	if (!is_user_logged_in()) {
-	    return Response::failure('Unauthenticated request.');
-	}
+	$require_authentication = Common::get_param($request, 'require_authentication', true);
 
-	if (empty($comment_author) || empty($comment_author_email) || empty($comment_content) || empty($post_id)) {
-		$message = array(
-		    'information' => 'Failed to parse required parameters from input',
-		    'parameters' => array(
-		        'comment_author' => $comment_author,
-		        'comment_author_email' => $comment_author_email,
-		        'comment_author_url' => $comment_author_url,
-		        'comment_content' => $comment_content,
-		        'comment_parent' => $comment_parent,
-		        'comment_post_ID' => $post_id,
-		        'user_id' => $user_id
-		        )
-		    );
-		    
-	    return Response::failure($message);
+	if ($require_authentication) {
+		if (!is_user_logged_in()) {
+			return Response::failure('Unauthenticated request.');
+		}
 	}
 
 	$commentdata = array(
@@ -108,12 +96,23 @@ function post_main_discussion_for_post_with_id(WP_REST_Request $request): WP_RES
 		'user_id' => $user_id,
 	);
 
-    $new_comment_id = wp_insert_comment($commentdata);
-    if (empty($new_comment_id)) {
-        return Response::failure('Unknown error occurred.');
-    }
-    return get_main_post_with_id($request);
+	if (empty($comment_author) || empty($comment_author_email) || empty($comment_content) || empty($post_id)) {
+		$message = array(
+			'information' => 'Failed to parse required parameters from input',
+			'parameters' => $commentdata
+		);
 
+		return Response::failure($message);
+	}
+
+	$new_comment_id = wp_insert_comment($commentdata);
+	if (is_wp_error($new_comment_id)) {
+		Response::failure($new_comment_id->get_error_message());
+	}
+	if (!empty($new_comment_id)) {
+		return get_main_post_with_id($request);
+	}
+	return Response::failure('Unknown error occurred.');
 }
 
 class Post
