@@ -3,12 +3,12 @@
 class Common {
 
     static function generate_query(
-        string $id,
-        string $posts_per_page,
-        string $post_type,
-        string $page,
-        string $search,
-        array $tax_query): WP_Query
+        string $id = '',
+        string $posts_per_page = '',
+        string $post_type = '',
+        string $page = '',
+        string $search = '',
+        array $tax_query = []): WP_Query
     {
         $arguments = array(
             'p' => $id,

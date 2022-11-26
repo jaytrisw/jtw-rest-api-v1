@@ -80,12 +80,11 @@ function get_main_taxonomy(WP_REST_Request $request): array
 {
 	if (sanitize_text_field($request->get_param('term'))) {
 		$query = Common::generate_query(
-			'',
-			sanitize_text_field($request->get_param('count')) ?: '10',
-			'post',
-			sanitize_text_field($request->get_param('page')) ?: '0',
-			sanitize_text_field($request->get_param('search')) ?: '',
-			array(
+			posts_per_page: sanitize_text_field($request->get_param('count')) ?: '10',
+			post_type: 'post',
+			page: sanitize_text_field($request->get_param('page')) ?: '0',
+			search: sanitize_text_field($request->get_param('search')) ?: '',
+			tax_query: array(
 				array(
 					'taxonomy' => sanitize_text_field($request->get_param('slug')),
 					'field' => Constants::slug,
