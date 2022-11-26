@@ -82,7 +82,7 @@ function get_main_taxonomy(WP_REST_Request $request): array
 		$query = Common::generate_query(
 			posts_per_page: Common::get_param(request: $request, parameter: 'count', default: '10'),
 			post_type: 'post',
-			page: Common::get_param(request: $request, parameter: 'page', default: '0'),
+			page: Common::get_param(request: $request, parameter: 'page'),
 			search: Common::get_param(request: $request, parameter: 'search'),
 			tax_query: array(
 				array(
