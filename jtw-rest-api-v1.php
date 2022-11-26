@@ -11,8 +11,8 @@ Version: 1.0.0
 
 require('includes/post.php');
 require('includes/taxonomy.php');
-require('constants.php');
-require('common.php');
+require('includes/constants.php');
+require('includes/common.php');
 
 add_action('rest_api_init', 'register_posts_route');
 add_action('rest_api_init', 'register_post_route');
@@ -87,7 +87,7 @@ function get_main_taxonomy(WP_REST_Request $request): array
 			array(
 				array(
 					'taxonomy' => sanitize_text_field($request->get_param('slug')),
-					'field' => Contansts::slug,
+					'field' => Constants::slug,
 					'terms' => sanitize_text_field($request->get_param('term'))
 				)
 			)

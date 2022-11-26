@@ -7,7 +7,7 @@ class Common {
         string $post_type,
         string $page,
         string $search,
-        array $tax_query = null): WP_Query
+        array $tax_query): WP_Query
     {
         $arguments = array(
             'posts_per_page' => $posts_per_page,

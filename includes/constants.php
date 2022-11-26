@@ -1,7 +1,7 @@
 <?php
 
-class Contansts {
+class Constants {
 
-    static const slug = 'slug';
+    const slug = 'slug';
 
 }
