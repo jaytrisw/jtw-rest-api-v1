@@ -1,7 +1,5 @@
 <?php
 
-require('taxonomy.php');
-
 function get_main_posts($query_string)
 {
 	$arguments = array(
@@ -147,14 +145,7 @@ function generate_taxonomies_for(WP_Post $post) {
 function generate_term_for(WP_Post $post, string $term_name): array
 {
 	$terms = wp_get_post_terms($post->ID, $term_name);
-	$terms_data = array();
-	$i = 0;
-
-	foreach ($terms as $term) {
-		$terms_data[$i] = generate_element_for($term)
-		$i++;
-	}
-	return $terms_data;
+	return Taxonomy::generate_taxonomy_elements_for($terms)
 }
 
 function flatten(array $array) {
