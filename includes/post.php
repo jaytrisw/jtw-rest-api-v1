@@ -2,6 +2,22 @@
 
 define('POST_TYPE', 'post');
 
+class Post {
+
+	static function generate_elements_for(array $posts): array {
+		$data = array();
+		$i = 0;
+
+		foreach ($posts as $post) {
+			$data[$i] = generate_element_for($post);
+			$i++;
+		}
+
+		return $data;
+	}
+
+}
+
 function get_main_posts(WP_REST_Request $request)
 {
 	$arguments = array(

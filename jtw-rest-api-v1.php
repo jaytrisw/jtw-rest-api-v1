@@ -11,6 +11,8 @@ Version: 1.0.0
 
 require('includes/post.php');
 require('includes/taxonomy.php');
+require('constants.php');
+require('common.php');
 
 add_action('rest_api_init', 'register_posts_route');
 add_action('rest_api_init', 'register_post_route');
@@ -74,10 +76,10 @@ function register_post_route()
 	);
 }
 
-function get_main_taxonomy(WP_REST_Request $request)
+function get_main_taxonomy(WP_REST_Request $request): array
 {
 	if (sanitize_text_field($request->get_param('term'))) {
-		$query = generate_query(
+		$query = Common::generate_query(
 			sanitize_text_field($request->get_param('count')) ?: '10',
 			'post',
 			sanitize_text_field($request->get_param('page')) ?: '0',
@@ -85,49 +87,23 @@ function get_main_taxonomy(WP_REST_Request $request)
 			array(
 				array(
 					'taxonomy' => sanitize_text_field($request->get_param('slug')),
-					'field' => 'slug',
+					'field' => Contansts::slug,
 					'terms' => sanitize_text_field($request->get_param('term'))
 				)
 			)
 		);
 
-		$data = array();
-		$i = 0;
-
-		foreach ($query->posts as $post) {
-			$data[$i] = generate_element_for($post);
-			$i++;
-		}
-
-		return $data;
+		return Post::generate_elements_for($query->posts);
 	}
 	return error('Please include a query for `term`');
 }
 
-function get_main_taxonomies(WP_REST_Request $request)
+function get_main_taxonomies(WP_REST_Request $request): array
 {
 	$terms = get_terms(
 		sanitize_text_field($request->get_param('slug'))
 	);
 	return Taxonomy::generate_elements_for($terms);
-}
-
-function generate_query(
-	string $posts_per_page,
-	string $post_type,
-	string $page,
-	string $search,
-	array $tax_query
-): WP_Query
-{
-	$arguments = array(
-		'posts_per_page' => $posts_per_page,
-		'post_type' => $post_type,
-		'paged' => $page,
-		's' => $search,
-		'tax_query' => $tax_query
-	);
-	return new WP_Query($arguments);
 }
 
 function error(string $message): array
