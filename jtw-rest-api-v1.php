@@ -122,7 +122,7 @@ function register_profile_routes()
 
 function validate_post_callback(WP_REST_Request $request) {
 	return Common::validate_api_key($request, function($request) {
-		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/validate', json_encode($data_array));
+		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/validate', json_encode(array()));
 		$response = json_decode($post_request, true);
 		
 		if ($response) {
@@ -149,7 +149,7 @@ function profile_callback(WP_REST_Request $request): WP_REST_Response
 			'avatar_url' => get_avatar_url($current_user->ID)
 		);
 
-		Response::success($user);
+		return Response::success($user);
 	});
 }
 
