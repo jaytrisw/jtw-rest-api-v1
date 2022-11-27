@@ -184,8 +184,8 @@ class Post
 					'identifier' => intval($comment->user_id),
 					'display_name' => $comment->comment_author,
 					'email' => $comment->comment_author_email,
-					'url' => parse_url($comment->comment_author_url),
-					'avatar_url' => parse_url(avatar_url(get_avatar($comment)))
+					'url' => format_url($comment->comment_author_url),
+					'avatar_url' => format_url(avatar_url(get_avatar($comment)))
 				),
 				'content' => $comment->comment_content
 			);
@@ -197,4 +197,9 @@ class Post
 		);
 	}
 
+}
+
+function format_url(string $url): string {
+	$components = parse_url($url);
+	return $components['scheme'].'://'.$components['host'].$components['path'];
 }
