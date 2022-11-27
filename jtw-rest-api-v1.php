@@ -120,22 +120,31 @@ function register_profile_routes()
 	);
 }
 
-function validate_post_callback(WP_REST_Request $request) {
-	return Common::validate_api_key($request, function($request) {
-		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/validate', json_encode(array()));
+function validate_post_callback(WP_REST_Request $request)
+{
+	return Common::validate_api_key($request, function ($request) {
+		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/validate', json_encode(array()), $request->get_header('Authorization'));
 		$response = json_decode($post_request, true);
-		
-		if ($response) {
-		    return $response;
-		}
 
-		return Response::failure('Validation failed.');
+		switch ($response['code']) {
+			case 'jwt_auth_valid_token':
+				return Response::success(array('status' => 'valid_access_token'));
+			case 'jwt_auth_no_auth_header':
+				return Response::success(array('status' => 'no_authoriztion_header'));
+			case 'jwt_auth_invalid_token':
+				if ($response['message'] == 'Expired token') {
+					return Response::success(array('status' => 'expired_access_token'));
+				}
+				return Response::success(array('status' => 'invalid_access_token'));
+			default:
+				return Response::success(array('status' => 'unknown_error'));
+		}
 	});
 }
 
 function profile_callback(WP_REST_Request $request): WP_REST_Response
 {
-	return Common::validate_authenticated_request($request, function($request) { 
+	return Common::validate_authenticated_request($request, function ($request) {
 		$current_user = wp_get_current_user();
 
 		$user = array(
@@ -155,7 +164,7 @@ function profile_callback(WP_REST_Request $request): WP_REST_Response
 
 function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
 {
-	return Common::validate_api_key($request, function($request) {
+	return Common::validate_api_key($request, function ($request) {
 
 		$encoded_username = Common::get_param($request, 'username');
 		$encoded_password = Common::get_param($request, 'password');

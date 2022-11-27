@@ -57,7 +57,7 @@ class Common
     }
 
     /// https://weichie.com/blog/curl-api-calls-with-php/
-    static function post_request(string $url, string $data): string
+    static function post_request(string $url, string $data, ?string $token = null): string
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_POST, 1);
@@ -66,7 +66,32 @@ class Common
 
         // OPTIONS:
         curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        if (isset($token)) {
+            curl_setopt(
+                $curl,
+                CURLOPT_HTTPHEADER,
+                array(
+                    'Content-Type: application/json',
+                    'Authorization ' . $token
+                )
+            );
+        } else {
+            curl_setopt(
+                $curl,
+                CURLOPT_HTTPHEADER,
+                array(
+                    'Content-Type: application/json'
+                )
+            );
+        }
+        curl_setopt(
+            $curl,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type: application/json',
+                'Authorization: ' . $token
+            )
+        );
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         // EXECUTE:
