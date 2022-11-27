@@ -117,7 +117,7 @@ class Post
 			'content' => wp_strip_all_tags($post->post_content),
 			'coordinate' => Post::generate_location_for($post),
 			'featured_image' => Post::generate_images_for($post),
-			'url' => urlencode(get_permalink($post)),
+			'url' => format_url(get_permalink($post)),
 			'photographer' => Post::generate_author_for($post),
 			'taxonomies' => Post::generate_taxonomies_for($post),
 			'discussion' => Post::generate_discussions_for($post)
@@ -138,8 +138,8 @@ class Post
 	private static function generate_images_for(WP_Post $post): array
 	{
 		return array(
-			'thumbnail' => get_the_post_thumbnail_url($post, 'thumbnail'),
-			'full' => get_the_post_thumbnail_url($post, 'full')
+			'thumbnail' => format_url(get_the_post_thumbnail_url($post, 'thumbnail')),
+			'full' => format_url(get_the_post_thumbnail_url($post, 'full'))
 		);
 	}
 
@@ -151,7 +151,7 @@ class Post
 			'first_name' => get_the_author_meta('first_name', $post->post_author) ?: null,
 			'last_name' => get_the_author_meta('last_name', $post->post_author) ?: null,
 			'description' => get_the_author_meta('description', $post->post_author) ?: null,
-			'avatar_url' => urlencode(get_avatar_url($post->post_author))
+			'avatar_url' => format_url(get_avatar_url($post->post_author))
 		);
 	}
 
