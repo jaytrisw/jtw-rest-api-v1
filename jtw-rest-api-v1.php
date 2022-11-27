@@ -122,9 +122,6 @@ function register_profile_routes()
 
 function validate_post_callback(WP_REST_Request $request) {
 	return Common::validate_api_key($request, function($request) {
-		$data_array = array(
-			'perform_validation' => 'true'
-		);
 		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/validate', json_encode($data_array));
 		$response = json_decode($post_request, true);
 		
