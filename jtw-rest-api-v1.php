@@ -161,7 +161,7 @@ function update_profile_callback(WP_REST_Request $request)
 			'user_email' => $email
 		);
 
-		if (empty($username) || empty($password) || empty($display_name) || empty($first_name) || empty($last_name) || empty($email)) {
+		if (empty($display_name) || empty($first_name) || empty($last_name) || empty($email)) {
 			$message = array(
 				'information' => 'Failed to parse required parameters from input',
 				'parameters' => $userdata
