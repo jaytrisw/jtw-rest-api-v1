@@ -2,117 +2,91 @@
 
 function get_main_posts(WP_REST_Request $request): WP_REST_Response
 {
-	$query = Common::generate_query(
-	posts_per_page: Common::get_param(
-		request: $request,
-		parameter: 'count',
-	default
-
-
-
-			: '10'
-		),
-	post_type: Post::POST_TYPE,
-	page: Common::get_param(
-		request: $request,
-		parameter: 'page'
-		),
-	search: Common::get_param(
-		request: $request,
-		parameter: 'search'
-		)
-	);
-
-	return Response::success(Post::generate_elements_for($query->posts));
+	return Common::validate_api_key($request, function ($request) {
+		$query = Common::generate_query(
+			posts_per_page: Common::get_param($request, 'count', '10'),
+			post_type: Post::POST_TYPE,
+			page: Common::get_param($request, 'page'),
+			search: Common::get_param($request, 'search')
+		);
+		return Response::success(Post::generate_elements_for($query->posts));
+	});
 }
 
 function get_main_post_with_id(WP_REST_Request $request): WP_REST_Response
 {
-
-	$query = Common::generate_query(
-	id: Common::get_param(
-		request: $request,
-		parameter: 'id'
-		),
-	post_type: Post::POST_TYPE
-	);
-
-	return Response::success(current(Post::generate_elements_for($query->posts)));
+	return Common::validate_api_key($request, function ($request) {
+		$query = Common::generate_query(
+			id: Common::get_param($request, 'id'),
+			post_type: Post::POST_TYPE
+		);
+		return Response::success(current(Post::generate_elements_for($query->posts)));
+	});
 }
 
 function get_main_post_with_slug(WP_REST_Request $request): WP_REST_Response
 {
-	$query = Common::generate_query(
-	slug: Common::get_param(
-		request: $request,
-		parameter: 'slug'
-		),
-	post_type: Post::POST_TYPE
-	);
-
-	return Response::success(current(Post::generate_elements_for($query->posts)));
+	return Common::validate_api_key($request, function ($request) {
+		$query = Common::generate_query(
+			slug: Common::get_param($request, 'slug'),
+			post_type: Post::POST_TYPE
+		);
+		return Response::success(current(Post::generate_elements_for($query->posts)));
+	});
 }
 
 function get_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST_Response
 {
-	$query = Common::generate_query(
-	id: Common::get_param(
-		request: $request,
-		parameter: 'id'
-		),
-	post_type: Post::POST_TYPE
-	);
-
-	return Response::success(
-		current(Post::generate_elements_for($query->posts))['discussion']
-	);
+	return Common::validate_api_key($request, function ($request) {
+		$query = Common::generate_query(
+			id: Common::get_param($request, 'id'),
+			post_type: Post::POST_TYPE
+		);
+		return Response::success(
+			current(Post::generate_elements_for($query->posts))['discussion']
+		);
+	});
 }
 
 function post_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST_Response
 {
+	return Common::validate_authenticated_request($request, function ($request) {
+		$comment_author = Common::get_param($request, 'author');
+		$comment_author_email = Common::get_param($request, 'author_email');
+		$comment_author_url = Common::get_param($request, 'author_url');
+		$comment_content = Common::get_param($request, 'content');
+		$post_id = Common::get_param($request, 'id');
+		$user_id = Common::get_param($request, 'author_id');
+		$comment_parent = Common::get_param($request, 'parent');
 
-	$comment_author = Common::get_param($request, 'author');
-	$comment_author_email = Common::get_param($request, 'author_email');
-	$comment_author_url = Common::get_param($request, 'author_url');
-	$comment_content = Common::get_param($request, 'content');
-	$post_id = Common::get_param($request, 'id');
-	$user_id = Common::get_param($request, 'author_id');
-	$comment_parent = Common::get_param($request, 'parent');
-	$require_authentication = Common::get_param($request, 'require_authentication', 'true');
-
-	if ($require_authentication == 'true') {
-		if (!is_user_logged_in()) {
-			return Response::failure('Unauthenticated request.');
-		}
-	}
-
-	$commentdata = array(
-		'comment_author' => $comment_author,
-		'comment_author_email' => $comment_author_email,
-		'comment_author_url' => $comment_author_url,
-		'comment_content' => $comment_content,
-		'comment_parent' => $comment_parent,
-		'comment_post_ID' => $post_id,
-		'user_id' => $user_id,
-	);
-
-	if (empty($comment_author) || empty($comment_author_email) || empty($comment_content) || empty($post_id)) {
-		$message = array(
-			'information' => 'Failed to parse required parameters from input',
-			'parameters' => $commentdata
+		$commentdata = array(
+			'comment_author' => $comment_author,
+			'comment_author_email' => $comment_author_email,
+			'comment_author_url' => $comment_author_url,
+			'comment_content' => $comment_content,
+			'comment_parent' => $comment_parent,
+			'comment_post_ID' => $post_id,
+			'user_id' => $user_id,
 		);
 
-		return Response::failure($message);
-	}
+		if (empty($comment_author) || empty($comment_author_email) || empty($comment_content) || empty($post_id)) {
+			$message = array(
+				'information' => 'Failed to parse required parameters from input',
+				'parameters' => $commentdata
+			);
 
-	$new_comment_id = wp_insert_comment($commentdata);
-	if (is_wp_error($new_comment_id)) {
-		Response::failure($new_comment_id->get_error_message());
-	}
-	if (!empty($new_comment_id)) {
-		return get_main_post_with_id($request);
-	}
-	return Response::failure('Unknown error occurred.');
+			return Response::failure($message);
+		}
+
+		$new_comment_id = wp_insert_comment($commentdata);
+		if (is_wp_error($new_comment_id)) {
+			Response::failure($new_comment_id->get_error_message());
+		}
+		if (!empty($new_comment_id)) {
+			return get_main_post_with_id($request);
+		}
+		return Response::failure('Unknown error occurred.');
+	});
 }
 
 class Post
