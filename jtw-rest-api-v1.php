@@ -86,7 +86,7 @@ function register_taxonomy_route()
 		'taxonomy/(?P<slug>[a-zA-Z-]+)',
 		array(
 			'methods' => WP_REST_SERVER::READABLE,
-			'callback' => 'get_main_taxonomy'
+			'callback' => 'get_taxonomy_callback'
 		)
 	);
 }
