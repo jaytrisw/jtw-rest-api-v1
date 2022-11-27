@@ -137,4 +137,13 @@ function register_profile_routes()
 			'callback' => 'update_profile_callback'
 		)
 	);
+	
+		register_rest_route(
+		'main/v1',
+		'profile/(?P<id>[\d]+)',
+		array(
+			'methods' => WP_REST_SERVER::DELETABLE,
+			'callback' => 'delete_profile_callback'
+		)
+	);
 }
