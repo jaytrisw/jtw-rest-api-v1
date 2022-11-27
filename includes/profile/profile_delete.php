@@ -4,7 +4,19 @@ function delete_profile_callback(WP_REST_Request $request): WP_REST_Response {
     return Common::validate_authenticated_request($request, function ($request) {
         $id = Common::get_param($request, 'id');
         $confirm_delete = Common::get_param($request, 'confirm_delete', 'false');
+        $encoded_username = Common::get_param($request, 'username');
+        $encoded_password = Common::get_param($request, 'password');
+
+        $username = base64_decode($encoded_username);
+        $password = base64_decode($encoded_password);
         $current_user = wp_get_current_user();
+
+        if (empty($username) || empty($password)) {
+            return Response::failure('Must include `username` and `password` with request');
+        }
+        if (!wp_check_password($password, $current_user->user_pass, $id)) {
+            return Response::failure('Password did not match');
+        }
         if ($confirm_delete == 'false') {
             return Response::failure('Must include `confirm_delete` with request');
         }
