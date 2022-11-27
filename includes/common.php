@@ -48,12 +48,34 @@ class Common
 
     static function validate_authenticated_request(WP_REST_Request $request, callable $callback)
     {
-        return Common::validate_api_key($request, function ($request, $callback) {
+        return Common::validate_api_key($request, function ($request) use ($callback) {
             if (is_user_logged_in()) {
                 return $callback($request);
             }
             return Response::failure('Unauthenticated request');
         });
+    }
+
+    /// https://weichie.com/blog/curl-api-calls-with-php/
+    static function post_request(string $url, string $data): string
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POST, 1);
+        if ($data)
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+        // OPTIONS:
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        // EXECUTE:
+        $result = curl_exec($curl);
+        if (!$result) {
+            return 'Call failed';
+        }
+        curl_close($curl);
+        return $result;
     }
 
 }

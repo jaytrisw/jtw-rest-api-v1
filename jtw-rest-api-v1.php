@@ -143,7 +143,7 @@ function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
 			'username' => $username,
 			'password' => $password
 		);
-		$post_request = post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/', json_encode($data_array));
+		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/', json_encode($data_array));
 		$response = json_decode($post_request, true);
 
 		if ($response['token']) {
@@ -158,26 +158,4 @@ function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
 
 	});
 
-}
-
-/// https://weichie.com/blog/curl-api-calls-with-php/
-function post_request(string $url, string $data): string
-{
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_POST, 1);
-	if ($data)
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-
-	// OPTIONS:
-	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-	// EXECUTE:
-	$result = curl_exec($curl);
-	if (!$result) {
-		return 'Call failed';
-	}
-	curl_close($curl);
-	return $result;
 }
