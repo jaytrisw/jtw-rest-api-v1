@@ -15,9 +15,16 @@ require('includes/constants.php');
 require('includes/common.php');
 require('includes/response.php');
 
+add_filter('jwt_auth_expire', 'on_jwt_expire_token', 10, 1);
+function on_jwt_expire_token()
+{
+	return time() + (86400 * 365);
+}
+
 add_action('rest_api_init', 'register_posts_route');
-add_action('rest_api_init', 'register_post_route');
+add_action('rest_api_init', 'register_post_routes');
 add_action('rest_api_init', 'register_taxonomy_route');
+add_action('rest_api_init', 'register_profile_routes');
 
 function register_posts_route()
 {
@@ -31,19 +38,7 @@ function register_posts_route()
 	);
 }
 
-function register_taxonomy_route()
-{
-	register_rest_route(
-		'main/v1',
-		'taxonomy/(?P<slug>[a-zA-Z-]+)',
-		array(
-			'methods' => WP_REST_SERVER::READABLE,
-			'callback' => 'get_main_taxonomy'
-		)
-	);
-}
-
-function register_post_route()
+function register_post_routes()
 {
 	register_rest_route(
 		'main/v1',
@@ -81,13 +76,57 @@ function register_post_route()
 		)
 	);
 
+}
+
+function register_taxonomy_route()
+{
 	register_rest_route(
 		'main/v1',
-		'authenticate',
+		'taxonomy/(?P<slug>[a-zA-Z-]+)',
+		array(
+			'methods' => WP_REST_SERVER::READABLE,
+			'callback' => 'get_main_taxonomy'
+		)
+	);
+}
+
+function register_profile_routes()
+{
+	register_rest_route(
+		'main/v1',
+		'profile/authenticate',
 		array(
 			'methods' => WP_REST_SERVER::CREATABLE,
 			'callback' => 'autenticate_post_callback'
 		)
+	);
+
+	register_rest_route(
+		'main/v1',
+		'profile',
+		array(
+			'methods' => WP_REST_SERVER::READABLE,
+			'callback' => 'profile_callback'
+		)
+	);
+}
+
+function profile_callback(WP_REST_Request $request)
+{
+	if (!is_user_logged_in()) {
+		return Response::failure('Unauthenticated request.');
+	}
+	$current_user = wp_get_current_user();
+
+	return array(
+		'identifier' => intval($current_user->ID),
+		'display_name' => get_the_author_meta('display_name', $current_user->ID),
+		'first_name' => get_the_author_meta('first_name', $current_user->ID) ?: null,
+		'last_name' => get_the_author_meta('last_name', $current_user->ID) ?: null,
+		'description' => get_the_author_meta('description', $current_user->ID) ?: null,
+		'registered' => get_the_author_meta('user_registered', $current_user->ID) ?: null,
+		'url' => get_the_author_meta('user_url', $current_user->ID) ?: null,
+		'avatar_url' => get_avatar_url($current_user->ID)
 	);
 }
 
@@ -103,34 +142,28 @@ function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
 		'username' => $username,
 		'password' => $password
 	);
-	$make_call = callAPI('POST', 'https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/', json_encode($data_array));
-	$response = json_decode($make_call, true);
+	$post_request = post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/', json_encode($data_array));
+	$response = json_decode($post_request, true);
 
 	if ($response['token']) {
-		return Response::success(array('token' => $response['token']));
+		return Response::success(
+			array(
+				'token' => $response['token']
+			)
+		);
 	}
 
 	return Response::failure('Authentication failed.');
 }
 
-function callAPI(string $method, string $url, string $data): string
+/// https://weichie.com/blog/curl-api-calls-with-php/
+function post_request(string $url, string $data): string
 {
 	$curl = curl_init();
-	switch ($method) {
-		case 'POST':
-			curl_setopt($curl, CURLOPT_POST, 1);
-			if ($data)
-				curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-			break;
-		case 'PUT':
-			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-			if ($data)
-				curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-			break;
-		default:
-			if ($data)
-				$url = sprintf("%s?%s", $url, http_build_query($data));
-	}
+	curl_setopt($curl, CURLOPT_POST, 1);
+	if ($data)
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
 	// OPTIONS:
 	curl_setopt($curl, CURLOPT_URL, $url);
 	curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
