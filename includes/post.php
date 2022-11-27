@@ -117,7 +117,7 @@ class Post
 			'content' => wp_strip_all_tags($post->post_content),
 			'coordinate' => Post::generate_location_for($post),
 			'featured_image' => Post::generate_images_for($post),
-			'url' => get_permalink($post),
+			'url' => urlencode(get_permalink($post)),
 			'photographer' => Post::generate_author_for($post),
 			'taxonomies' => Post::generate_taxonomies_for($post),
 			'discussion' => Post::generate_discussions_for($post)
@@ -151,7 +151,7 @@ class Post
 			'first_name' => get_the_author_meta('first_name', $post->post_author) ?: null,
 			'last_name' => get_the_author_meta('last_name', $post->post_author) ?: null,
 			'description' => get_the_author_meta('description', $post->post_author) ?: null,
-			'avatar_url' => get_avatar_url($post->post_author)
+			'avatar_url' => urlencode(get_avatar_url($post->post_author))
 		);
 	}
 
@@ -184,8 +184,8 @@ class Post
 					'identifier' => intval($comment->user_id),
 					'display_name' => $comment->comment_author,
 					'email' => $comment->comment_author_email,
-					'url' => $comment->comment_author_url,
-					'avatar_url' => avatar_url(get_avatar($comment))
+					'url' => urlencode($comment->comment_author_url),
+					'avatar_url' => urlencode(avatar_url(get_avatar($comment)))
 				),
 				'content' => $comment->comment_content
 			);
