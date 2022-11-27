@@ -117,7 +117,7 @@ class Post
 			'content' => wp_strip_all_tags($post->post_content),
 			'coordinate' => Post::generate_location_for($post),
 			'featured_image' => Post::generate_images_for($post),
-			'url' => format_url(get_permalink($post)),
+			'url' => Common::format_url(get_permalink($post)),
 			'photographer' => Post::generate_author_for($post),
 			'taxonomies' => Post::generate_taxonomies_for($post),
 			'discussion' => Post::generate_discussions_for($post)
@@ -138,8 +138,8 @@ class Post
 	private static function generate_images_for(WP_Post $post): array
 	{
 		return array(
-			'thumbnail' => format_url(get_the_post_thumbnail_url($post, 'thumbnail')),
-			'full' => format_url(get_the_post_thumbnail_url($post, 'full'))
+			'thumbnail' => get_the_post_thumbnail_url($post, 'thumbnail'),
+			'full' => Common::format_url(get_the_post_thumbnail_url($post, 'full'))
 		);
 	}
 
@@ -151,7 +151,7 @@ class Post
 			'first_name' => get_the_author_meta('first_name', $post->post_author) ?: null,
 			'last_name' => get_the_author_meta('last_name', $post->post_author) ?: null,
 			'description' => get_the_author_meta('description', $post->post_author) ?: null,
-			'avatar_url' => format_url(get_avatar_url($post->post_author))
+			'avatar_url' => Common::format_url(get_avatar_url($post->post_author))
 		);
 	}
 
@@ -184,8 +184,8 @@ class Post
 					'identifier' => intval($comment->user_id),
 					'display_name' => $comment->comment_author,
 					'email' => $comment->comment_author_email,
-					'url' => format_url($comment->comment_author_url),
-					'avatar_url' => format_url(avatar_url(get_avatar($comment)))
+					'url' => Common::format_url($comment->comment_author_url),
+					'avatar_url' => Common::format_url(avatar_url(get_avatar($comment)))
 				),
 				'content' => $comment->comment_content
 			);
@@ -197,9 +197,4 @@ class Post
 		);
 	}
 
-}
-
-function format_url(string $url): string {
-	$components = parse_url($url);
-	return $components['scheme'].'://'.$components['host'].$components['path'];
 }

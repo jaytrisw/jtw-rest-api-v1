@@ -12,6 +12,7 @@ class Common
         string $search = '',
         array $tax_query = array()): WP_Query
     {
+        wp_reset_query();
         $arguments = array(
             'p' => $id,
             'name' => $slug,
@@ -101,6 +102,12 @@ class Common
         }
         curl_close($curl);
         return $result;
+    }
+
+    static function format_url(string $url): string
+    {
+        $components = parse_url($url);
+        return $components['scheme'] . '://' . $components['host'] . $components['path'];
     }
 
 }
