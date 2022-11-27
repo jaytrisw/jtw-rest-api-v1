@@ -103,6 +103,15 @@ function register_profile_routes()
 
 	register_rest_route(
 		'main/v1',
+		'profile/validate',
+		array(
+			'methods' => WP_REST_SERVER::CREATABLE,
+			'callback' => 'validate_post_callback'
+		)
+	);
+
+	register_rest_route(
+		'main/v1',
 		'profile',
 		array(
 			'methods' => WP_REST_SERVER::READABLE,
@@ -111,12 +120,25 @@ function register_profile_routes()
 	);
 }
 
-function profile_callback(WP_REST_Request $request)
+function validate_post_callback(WP_REST_Request $request) {
+	return Common::validate_api_key($request, function($request) {
+		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/validate', '');
+		$response = json_decode($post_request, true);
+		
+		if ($response) {
+		    return $response;
+		}
+
+		return Response::failure('Validation failed.');
+	});
+}
+
+function profile_callback(WP_REST_Request $request): WP_REST_Response
 {
 	return Common::validate_authenticated_request($request, function($request) { 
 		$current_user = wp_get_current_user();
 
-		return array(
+		$user = array(
 			'identifier' => intval($current_user->ID),
 			'display_name' => get_the_author_meta('display_name', $current_user->ID),
 			'first_name' => get_the_author_meta('first_name', $current_user->ID) ?: null,
@@ -126,6 +148,8 @@ function profile_callback(WP_REST_Request $request)
 			'url' => get_the_author_meta('user_url', $current_user->ID) ?: null,
 			'avatar_url' => get_avatar_url($current_user->ID)
 		);
+
+		Response::success($user);
 	});
 }
 
