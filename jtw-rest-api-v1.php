@@ -105,7 +105,7 @@ function register_profile_routes()
 		'main/v1',
 		'profile/validate',
 		array(
-			'methods' => WP_REST_SERVER::CREATABLE,
+			'methods' => WP_REST_SERVER::READABLE,
 			'callback' => 'validate_post_callback'
 		)
 	);
@@ -123,21 +123,23 @@ function register_profile_routes()
 function validate_post_callback(WP_REST_Request $request)
 {
 	return Common::validate_api_key($request, function ($request) {
-		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/validate', json_encode(array()), $request->get_header('Authorization'));
+		$bearer_token = $request->get_header('Authorization');
+		$post_request = Common::post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/validate', json_encode(array()), $bearer_token);
 		$response = json_decode($post_request, true);
+		$token = str_replace('Bearer ', '', $bearer_token);
 
 		switch ($response['code']) {
 			case 'jwt_auth_valid_token':
-				return Response::success(array('status' => 'valid_access_token'));
+				return Response::success(array('token' => null, 'status' => 'valid_access_token'));
 			case 'jwt_auth_no_auth_header':
-				return Response::success(array('status' => 'no_authoriztion_header'));
+				return Response::success(array('token' => $token, 'status' => 'no_authoriztion_header'));
 			case 'jwt_auth_invalid_token':
 				if ($response['message'] == 'Expired token') {
-					return Response::success(array('status' => 'expired_access_token'));
+					return Response::success(array('token' => $token, 'status' => 'expired_access_token'));
 				}
-				return Response::success(array('status' => 'invalid_access_token'));
+				return Response::success(array('token' => $token, 'status' => 'invalid_access_token'));
 			default:
-				return Response::success(array('status' => 'unknown_error'));
+				return Response::success(array('token' => $token, 'status' => 'unknown_error'));
 		}
 	});
 }
@@ -182,7 +184,8 @@ function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
 		if ($response['token']) {
 			return Response::success(
 				array(
-					'token' => $response['token']
+					'token' => $response['token'],
+					'status' => 'valid_access_token'
 				)
 			);
 		}
