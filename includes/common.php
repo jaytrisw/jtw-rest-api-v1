@@ -57,12 +57,15 @@ class Common
     }
 
     /// https://weichie.com/blog/curl-api-calls-with-php/
-    static function post_request(string $url, string $data): string
+    static function post_request(string $url, ?string $data): string
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_POST, 1);
-        // if ($data)
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        if ($data) {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        } else {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, []);
+        }
 
         // OPTIONS:
         curl_setopt($curl, CURLOPT_URL, $url);
