@@ -14,7 +14,7 @@ function delete_profile_callback(WP_REST_Request $request): WP_REST_Response {
         if (empty($username) || empty($password)) {
             return Response::failure('Must include `username` and `password` with request');
         }
-        if (!wp_check_password($password, $current_user->user_pass, $id)) {
+        if (!wp_check_password(wp_hash_password($password), $current_user->user_pass, $id)) {
             return Response::failure('Password did not match');
         }
         if ($confirm_delete == 'false') {
