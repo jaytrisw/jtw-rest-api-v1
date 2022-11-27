@@ -113,7 +113,7 @@ function register_profile_routes()
 
 function profile_callback(WP_REST_Request $request)
 {
-	return Common::validate_authenticated_request(request, function($request) { 
+	return Common::validate_authenticated_request($request, function($request) { 
 		$current_user = wp_get_current_user();
 
 		return array(
@@ -131,7 +131,7 @@ function profile_callback(WP_REST_Request $request)
 
 function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
 {
-	return Common::validate_api_key($request, function ($request) {
+	return Common::validate_api_key($request, function($request) {
 
 		$encoded_username = Common::get_param($request, 'username');
 		$encoded_password = Common::get_param($request, 'password');

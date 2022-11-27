@@ -48,10 +48,12 @@ class Common
 
     static function validate_authenticated_request(WP_REST_Request $request, callable $callback)
     {
-        if (is_user_logged_in()) {
-            return $callback($request);
-        }
-        return Response::failure('Unauthenticated request');
+        return Common::validate_api_key($request, function ($request, $callback) {
+            if (is_user_logged_in()) {
+                return $callback($request);
+            }
+            return Response::failure('Unauthenticated request');
+        });
     }
 
 }
