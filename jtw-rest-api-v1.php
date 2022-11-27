@@ -113,47 +113,51 @@ function register_profile_routes()
 
 function profile_callback(WP_REST_Request $request)
 {
-	if (!is_user_logged_in()) {
-		return Response::failure('Unauthenticated request.');
-	}
-	$current_user = wp_get_current_user();
+	return Common::validate_authenticated_request(request, function($request) { 
+		$current_user = wp_get_current_user();
 
-	return array(
-		'identifier' => intval($current_user->ID),
-		'display_name' => get_the_author_meta('display_name', $current_user->ID),
-		'first_name' => get_the_author_meta('first_name', $current_user->ID) ?: null,
-		'last_name' => get_the_author_meta('last_name', $current_user->ID) ?: null,
-		'description' => get_the_author_meta('description', $current_user->ID) ?: null,
-		'registered' => get_the_author_meta('user_registered', $current_user->ID) ?: null,
-		'url' => get_the_author_meta('user_url', $current_user->ID) ?: null,
-		'avatar_url' => get_avatar_url($current_user->ID)
-	);
+		return array(
+			'identifier' => intval($current_user->ID),
+			'display_name' => get_the_author_meta('display_name', $current_user->ID),
+			'first_name' => get_the_author_meta('first_name', $current_user->ID) ?: null,
+			'last_name' => get_the_author_meta('last_name', $current_user->ID) ?: null,
+			'description' => get_the_author_meta('description', $current_user->ID) ?: null,
+			'registered' => get_the_author_meta('user_registered', $current_user->ID) ?: null,
+			'url' => get_the_author_meta('user_url', $current_user->ID) ?: null,
+			'avatar_url' => get_avatar_url($current_user->ID)
+		);
+	});
 }
 
 function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
 {
-	$encoded_username = Common::get_param($request, 'username');
-	$encoded_password = Common::get_param($request, 'password');
+	return Common::validate_api_key($request, function ($request) {
 
-	$username = base64_decode($encoded_username);
-	$password = base64_decode($encoded_password);
+		$encoded_username = Common::get_param($request, 'username');
+		$encoded_password = Common::get_param($request, 'password');
 
-	$data_array = array(
-		'username' => $username,
-		'password' => $password
-	);
-	$post_request = post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/', json_encode($data_array));
-	$response = json_decode($post_request, true);
+		$username = base64_decode($encoded_username);
+		$password = base64_decode($encoded_password);
 
-	if ($response['token']) {
-		return Response::success(
-			array(
-				'token' => $response['token']
-			)
+		$data_array = array(
+			'username' => $username,
+			'password' => $password
 		);
-	}
+		$post_request = post_request('https://www.joshuatwood.com/wp-json/jwt-auth/v1/token/', json_encode($data_array));
+		$response = json_decode($post_request, true);
 
-	return Response::failure('Authentication failed.');
+		if ($response['token']) {
+			return Response::success(
+				array(
+					'token' => $response['token']
+				)
+			);
+		}
+
+		return Response::failure('Authentication failed.');
+
+	});
+
 }
 
 /// https://weichie.com/blog/curl-api-calls-with-php/
