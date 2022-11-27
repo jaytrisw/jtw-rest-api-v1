@@ -128,4 +128,57 @@ function register_profile_routes()
 			'callback' => 'create_profile_callback'
 		)
 	);
+
+	register_rest_route(
+		'main/v1',
+		'profile/(?P<id>[\d]+)',
+		array(
+			'methods' => WP_REST_SERVER::EDITABLE,
+			'callback' => 'update_profile_callback'
+		)
+	);
+}
+
+function update_profile_callback(WP_REST_Request $request)
+{
+	return Common::validate_authenticated_request($request, function ($request) {
+		$id = Common::get_param($request, 'id');
+		$current_user = get_current_user();
+
+		$display_name = Common::get_param($request, 'display_name');
+		$first_name = Common::get_param($request, 'first_name');
+		$last_name = Common::get_param($request, 'last_name');
+		$description = Common::get_param($request, 'description');
+		$url = Common::get_param($request, 'url');
+		$email = Common::get_param($request, 'email');
+		
+		$userdata = array(
+			'display_name' => $display_name,
+			'first_name' => $first_name,
+			'last_name' => $last_name,
+			'description' => $description,
+			'user_url' => $url,
+			'user_email' => $email
+		);
+
+		if (empty($username) || empty($password) || empty($display_name) || empty($first_name) || empty($last_name) || empty($email)) {
+			$message = array(
+				'information' => 'Failed to parse required parameters from input',
+				'parameters' => $userdata
+			);
+	
+			return Response::failure($message);
+		}
+
+		if (!$current_user->ID == $id) {
+			return Response::failure('Identifier mismatch, cannot update user');
+		}
+
+		$updated_user_id = wp_update_user($userdata);
+		if (is_wp_error($updated_user_id)) {
+		    Response::failure($updated_user_id->get_error_message());
+	    }
+		
+		return profile_callback($request);
+	});
 }
