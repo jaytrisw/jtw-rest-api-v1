@@ -1,6 +1,6 @@
 <?php
 
-require('profile/profile_autenticate.php');
+require('profile/profile_authenticate.php');
 require('profile/profile_create.php');
 require('profile/profile_delete.php');
 require('profile/profile_get.php');
