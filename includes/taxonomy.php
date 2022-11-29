@@ -43,6 +43,10 @@ class Taxonomy
 		$terms_data = array();
 		$i = 0;
 		foreach ($terms as $term) {
+			if ($term == 'post_format') {
+				i++;
+				continue;
+			}
 			$terms_data[$i] = Taxonomy::generate_element_for($term);
 			$i++;
 		}
