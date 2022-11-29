@@ -33,12 +33,12 @@ function update_profile_callback(WP_REST_Request $request)
         }
 
         if ($current_user->ID != $id) {
-            return Response::failure('Idenitifier mismatch, cannot update user', StatusCode::FORBIDDEN, ErrorCode::INVALID_USER_UPDATE);
+            return Response::failure('Idenitifier mismatch, cannot update user', StatusCode::FORBIDDEN, ErrorCode::INVALID_USER_IDENTIFIER);
         }
 
         $updated_user_id = wp_update_user($userdata);
         if (is_wp_error($updated_user_id)) {
-            Response::failure($updated_user_id->get_error_message(), StatusCode::FORBIDDEN, ErrorCode::FAILED);
+            Response::failure($updated_user_id->get_error_message(), StatusCode::FORBIDDEN, ErrorCode::UPDATE_FAILED);
         }
         return profile_callback($request);
     });

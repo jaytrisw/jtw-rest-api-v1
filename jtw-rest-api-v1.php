@@ -15,6 +15,8 @@ require('includes/profile.php');
 require('includes/constants.php');
 require('includes/common.php');
 require('includes/response.php');
+require('includes/error_code.php');
+require('includes/status_code.php');
 
 add_filter('jwt_auth_expire', 'on_jwt_expire_token', 10, 1);
 function on_jwt_expire_token()

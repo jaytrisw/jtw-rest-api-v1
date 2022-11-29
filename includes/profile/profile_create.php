@@ -42,7 +42,7 @@ function create_profile_callback(WP_REST_Request $request): WP_REST_Response
         $new_user_id = wp_insert_user($userdata);
 
         if (is_wp_error($new_user_id)) {
-            Response::failure($new_user_id->get_error_message(), StatusCode::FORBIDDEN, ErrorCode::FAILED);
+            Response::failure($new_user_id->get_error_message(), StatusCode::FORBIDDEN, ErrorCode::CREATE_FAILED);
         }
 
         return autenticate_post_callback($request);
