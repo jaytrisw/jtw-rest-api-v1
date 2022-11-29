@@ -29,16 +29,16 @@ function update_profile_callback(WP_REST_Request $request)
                 'parameters' => $userdata
             );
 
-            return Response::failure($message);
+            return Response::failure($message, StatusCode::BAD_REQUEST, ErrorCode::MISSING_PARAMETER);
         }
 
         if ($current_user->ID != $id) {
-            return Response::failure('Idenitifier mismatch, cannot update user');
+            return Response::failure('Idenitifier mismatch, cannot update user', StatusCode::FORBIDDEN, ErrorCode::INVALID_USER_UPDATE);
         }
 
         $updated_user_id = wp_update_user($userdata);
         if (is_wp_error($updated_user_id)) {
-            Response::failure($updated_user_id->get_error_message());
+            Response::failure($updated_user_id->get_error_message(), StatusCode::FORBIDDEN, ErrorCode::FAILED);
         }
         return profile_callback($request);
     });

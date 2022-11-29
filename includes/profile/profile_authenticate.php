@@ -26,7 +26,7 @@ function autenticate_post_callback(WP_REST_Request $request): WP_REST_Response
             );
         }
 
-        return Response::failure('Authentication failed.');
+        return Response::failure('Authentication failed.', StatusCode::FORBIDDEN, ErrorCode::FAILED);
 
     });
 

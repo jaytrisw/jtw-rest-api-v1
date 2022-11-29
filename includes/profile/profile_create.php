@@ -32,17 +32,17 @@ function create_profile_callback(WP_REST_Request $request): WP_REST_Response
                 'parameters' => $userdata
             );
 
-            return Response::failure($message);
+            return Response::failure($message, StatusCode::BAD_REQUEST, ErrorCode::MISSING_PARAMETER);
         }
 
         if (get_user_by('email', $email) || get_user_by('login', $username)) {
-            return Response::failure('A user with already exists with specified parameters');
+            return Response::failure('A user with already exists with specified parameters', StatusCode::CONFLICT, ErrorCode::USER_EXISTS);
         }
 
         $new_user_id = wp_insert_user($userdata);
 
         if (is_wp_error($new_user_id)) {
-            Response::failure($new_user_id->get_error_message());
+            Response::failure($new_user_id->get_error_message(), StatusCode::FORBIDDEN, ErrorCode::FAILED);
         }
 
         return autenticate_post_callback($request);

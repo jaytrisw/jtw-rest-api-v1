@@ -44,7 +44,7 @@ class Common
         if (REST_API_KEY == Common::get_param($request, 'api_key')) {
             return $callback($request);
         }
-        return Response::failure('Invalid API key', 401, ErrorCodes::API_KEY);
+        return Response::failure('Invalid API key', StatusCode::UNAUTHORIZED, ErrorCode::API_KEY);
     }
 
     static function validate_authenticated_request(WP_REST_Request $request, callable $callback)
@@ -53,7 +53,7 @@ class Common
             if (is_user_logged_in()) {
                 return $callback($request);
             }
-            return Response::failure('Unauthenticated request', 401, ErrorCodes::AUTHENTICATION);
+            return Response::failure('Unauthenticated request', StatusCode::UNAUTHORIZED, ErrorCode::AUTHENTICATION);
         });
     }
 
