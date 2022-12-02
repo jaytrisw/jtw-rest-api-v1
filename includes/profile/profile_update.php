@@ -14,26 +14,30 @@ function update_profile_callback(WP_REST_Request $request)
         $email = Common::get_param($request, 'email');
 
         $userdata = array(
-            'ID' => $id,
-            'display_name' => $display_name,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'description' => $description,
-            'user_url' => $url,
-            'user_email' => $email
+            'ID' => $id
         );
-
-        if (empty($display_name) || empty($first_name) || empty($last_name) || empty($email)) {
-            $message = array(
-                'information' => 'Failed to parse required parameters from input',
-                'parameters' => $userdata
-            );
-
-            return Response::failure($message, StatusCode::BAD_REQUEST, ErrorCode::MISSING_PARAMETER);
+        
+        if (!empty($display_name)) {
+            $userdata['display_name'] = $display_name;
+        }
+        if (!empty($first_name)) {
+            $userdata['first_name'] = $first_name;
+        }
+        if (!empty($last_name)) {
+            $userdata['last_name'] = $last_name;
+        }
+        if (!empty($description)) {
+            $userdata['description'] = $description;
+        }
+        if (!empty($url)) {
+            $userdata['user_url'] = $url;
+        }
+        if (!empty($email)) {
+            $userdata['user_email'] = $email;
         }
 
         if ($current_user->ID != $id) {
-            return Response::failure('Idenitifier mismatch, cannot update user', StatusCode::FORBIDDEN, ErrorCode::INVALID_USER_IDENTIFIER);
+            return Response::failure('Identifier mismatch, cannot update user', StatusCode::FORBIDDEN, ErrorCode::INVALID_USER_IDENTIFIER);
         }
 
         $updated_user_id = wp_update_user($userdata);

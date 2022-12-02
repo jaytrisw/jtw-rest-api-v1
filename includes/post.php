@@ -51,25 +51,19 @@ function get_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST
 function post_main_discussion_for_post_with_id(WP_REST_Request $request): WP_REST_Response
 {
 	return Common::validate_authenticated_request($request, function ($request) {
-		$comment_author = Common::get_param($request, 'author');
-		$comment_author_email = Common::get_param($request, 'author_email');
-		$comment_author_url = Common::get_param($request, 'author_url');
 		$comment_content = Common::get_param($request, 'content');
 		$post_id = Common::get_param($request, 'id');
-		$user_id = Common::get_param($request, 'author_id');
 		$comment_parent = Common::get_param($request, 'parent');
+		$current_user = wp_get_current_user();
 
 		$commentdata = array(
-			'comment_author' => $comment_author,
-			'comment_author_email' => $comment_author_email,
-			'comment_author_url' => $comment_author_url,
 			'comment_content' => $comment_content,
 			'comment_parent' => $comment_parent,
 			'comment_post_ID' => $post_id,
-			'user_id' => $user_id,
+			'user_id' => $current_user->ID
 		);
 
-		if (empty($comment_author) || empty($comment_author_email) || empty($comment_content) || empty($post_id)) {
+		if (empty($comment_content) || empty($post_id)) {
 			$message = array(
 				'information' => 'Failed to parse required parameters from input',
 				'parameters' => $commentdata
@@ -162,8 +156,10 @@ class Post
 		$terms_data = array();
 		$i = 0;
 		foreach ($taxonomies as $taxonomy) {
-			$terms = wp_get_post_terms($post->ID, $taxonomy);
-			$terms_data[$i] = Taxonomy::generate_elements_for($terms);
+		    if ($taxonomy != 'post_format') {
+			    $terms = wp_get_post_terms($post->ID, $taxonomy);
+			    $terms_data[$i] = Taxonomy::generate_elements_for($terms);
+		    }
 			$i++;
 		}
 		return call_user_func_array('array_merge', $terms_data);
