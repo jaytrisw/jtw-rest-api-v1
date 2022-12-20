@@ -27,6 +27,7 @@ require_once('models/taxonomy.php');
 
 // Controllers
 require_once('controllers/photograph_controller.php');
+
 // DataSource
 require_once('data_source/photograph_data_source.php');
 require_once('data_source/implementation/wp_photograph_data_source.php');

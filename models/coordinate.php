@@ -1,4 +1,4 @@
-<?php require_once('../includes.php');
+<?php 
 
 class Coordinate {
 	public float $latitude;

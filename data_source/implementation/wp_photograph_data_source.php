@@ -1,5 +1,4 @@
 <?php 
-require_once('../../includes.php');
 
 class WP_PhotographDataSource implements PhotographDataSource {
 	public function get_photographs(): array {
