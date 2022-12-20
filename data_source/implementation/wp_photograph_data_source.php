@@ -1,8 +1,18 @@
 <?php 
 
 class WP_PhotographDataSource implements PhotographDataSource {
-	public function get_photographs(): array {
-        return [];
+	public function get_photographs(int $count, int $page, string $search): array {
+		$query = Common::generate_query(
+			posts_per_page: $count,
+			post_type: Post::POST_TYPE,
+			page: $page,
+			search: $search
+		);
+		$photograph_array = array();
+		foreach ($query->posts as $post) {
+			array_push($photograph_array, $this->get_photograph($post->ID));
+		}
+		return $photograph_array;
 	}
 
 	public function get_photograph(int $identifier): Photograph {

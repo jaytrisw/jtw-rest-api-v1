@@ -175,6 +175,15 @@ function register_profile_routes()
 			'callback' => 'get_photograph'
 		)
 	);
+
+	register_rest_route(
+		'main/v1',
+		'photographs',
+		array(
+			'methods' => WP_REST_SERVER::READABLE,
+			'callback' => 'get_photographs'
+		)
+	);
 }
 
 function get_photograph(WP_REST_Request $request): WP_REST_Response {
@@ -183,5 +192,16 @@ function get_photograph(WP_REST_Request $request): WP_REST_Response {
 		$data_source = new WP_PhotographDataSource();
 		$controller = new PhotographsController($data_source);
 		return Response::success($controller->get_photograph(intval($identifier)));
+	});
+}
+
+function get_photographs(WP_REST_Request $request): WP_REST_Response {
+	return Common::validate_api_key($request, function ($request) {
+		$count = Common::get_param($request, 'count', '10');
+		$page = Common::get_param($request, 'page', '0');
+		$search = Common::get_param($request, 'search');
+		$data_source = new WP_PhotographDataSource();
+		$controller = new PhotographsController($data_source);
+		return Response::success($controller->get_photographs(intval($count), intval($page), $search));
 	});
 }
