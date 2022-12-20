@@ -9,14 +9,7 @@
  * Plugin URI: https://www.joshuatwood.com
  */
 
-require('includes/post.php');
-require('includes/taxonomy.php');
-require('includes/profile.php');
-require('includes/constants.php');
-require('includes/common.php');
-require('includes/response.php');
-require('includes/error_code.php');
-require('includes/status_code.php');
+require_once('includes.php');
 
 add_filter('jwt_auth_expire', 'on_jwt_expire_token', 10, 1);
 function on_jwt_expire_token()
@@ -140,7 +133,7 @@ function register_profile_routes()
 		)
 	);
 	
-		register_rest_route(
+	register_rest_route(
 		'main/v1',
 		'profile/(?P<id>[\d]+)',
 		array(
@@ -148,4 +141,22 @@ function register_profile_routes()
 			'callback' => 'delete_profile_callback'
 		)
 	);
+
+	register_rest_route(
+		'main/v1',
+		'photographs/(?P<id>[\d]+)',
+		array(
+			'methods' => WP_REST_SERVER::READABLE,
+			'callback' => 'get_photograph'
+		)
+	);
+}
+
+function get_photograph(WP_REST_Request $request): WP_REST_Response {
+	return Common::validate_api_key($request, function ($request) {
+		$identifier = Common::get_param($request, 'id');
+		$data_source = new WP_PhotographDataSource();
+		$controller = new PhotographsController($data_source);
+		return Response::success($controller->get_photograph(intval($identifier)));
+	});
 }

@@ -3,7 +3,7 @@
 class Response
 {
 
-    static function success(array $data): WP_REST_Response
+    static function success(mixed $data): WP_REST_Response
     {
         return new WP_REST_Response($data);
     }
