@@ -1,7 +1,7 @@
 <?php
 
-enum ErrorCode: int
-{
+enum ErrorCode: int {
+
     case UNKNOWN = -999;
     case API_KEY = 1;
     case AUTHENTICATION = 2;
