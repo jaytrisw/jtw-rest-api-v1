@@ -1,14 +1,13 @@
-<?php 
+<?php
 
-class FeaturedImage {
-
-	public string $thumbnail;
+class FeaturedImage
+{
+    public string $thumbnail;
     public string $full;
 
-	public function __construct(
-		string $thumbnail, 
-		string $full) {
-			$this->thumbnail = $thumbnail;
-			$this->full = $full;
-	}
+    public function __construct(string $thumbnail, string $full)
+    {
+        $this->thumbnail = $thumbnail;
+        $this->full = $full;
+    }
 }
